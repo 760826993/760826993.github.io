@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeeTa 盈虧 — 每日帳本</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;700&family=Noto+Serif+HK:wght@600;700;900&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        html{-webkit-text-size-adjust:100%;}
+        body{
+            min-height:100vh;
+            padding:0 14px 40px;
+            font-family:"Noto Sans HK",system-ui,sans-serif;
+            font-size:16px;color:#fff;
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            position:relative;overflow-x:hidden;
+        }
+        /* 漂浮光斑，強化玻璃感 */
+        body::before,body::after{
+            content:"";position:fixed;border-radius:50%;pointer-events:none;z-index:0;
+            filter:blur(60px);opacity:.5;
+        }
+        body::before{width:380px;height:380px;top:-90px;right:-60px;background:#9f6bff;}
+        body::after{width:420px;height:420px;bottom:-120px;left:-90px;background:#ff7eb3;opacity:.35;}
+
+        .wrap{position:relative;z-index:1;max-width:640px;margin:0 auto;}
+
+        /* ===== Header ===== */
+        .masthead{text-align:center;padding:34px 0 22px;}
+        .brand{
+            display:inline-flex;align-items:center;gap:10px;
+            font-family:"Noto Serif HK",serif;font-weight:700;font-size:14px;
+            letter-spacing:.14em;color:#fff;opacity:.85;
+            padding:6px 16px;border:1px solid rgba(255,255,255,.3);border-radius:999px;
+            background:rgba(255,255,255,.1);backdrop-filter:blur(10px);
+            margin-bottom:16px;opacity:0;animation:rise .6s .1s ease forwards;
+        }
+        .brand .dot{width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 10px #fff;}
+        h1{
+            font-family:"Noto Serif HK",serif;font-weight:900;font-size:clamp(30px,7vw,42px);
+            line-height:1.08;letter-spacing:.02em;color:#fff;
+            text-shadow:0 4px 24px rgba(0,0,0,.25);
+            opacity:0;animation:rise .7s .2s ease forwards;
+        }
+        .sub{margin-top:10px;color:#fff;opacity:.75;font-size:14px;letter-spacing:.04em;
+            opacity:0;animation:rise .6s .32s ease forwards;}
+
+        /* ===== Glass card ===== */
+        .glass{
+            position:relative;
+            background:rgba(255,255,255,0.15);
+            backdrop-filter:blur(12px);
+            -webkit-backdrop-filter:blur(12px);
+            border:1px solid rgba(255,255,255,0.2);
+            border-radius:16px;
+            padding:18px 18px 20px;
+            margin:0 0 16px;
+            box-shadow:0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+            opacity:0;animation:rise .6s ease forwards;
+        }
+        .glass:nth-of-type(1){animation-delay:.34s;}
+        .glass:nth-of-type(2){animation-delay:.42s;}
+        .glass:nth-of-type(3){animation-delay:.50s;}
+        .glass:nth-of-type(4){animation-delay:.58s;}
+        .g-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+        .g-ico{
+            width:34px;height:34px;border-radius:10px;flex:none;
+            display:grid;place-items:center;font-size:17px;
+            background:rgba(255,255,255,0.18);
+            border:1px solid rgba(255,255,255,0.25);
+            box-shadow:inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+        .g-head h2{font-family:"Noto Serif HK",serif;font-weight:700;font-size:16px;color:#fff;opacity:.95;letter-spacing:.03em;}
+        .g-head .tag{margin-left:auto;font-size:10.5px;color:#fff;opacity:.6;letter-spacing:.12em;border:1px solid rgba(255,255,255,.25);padding:3px 9px;border-radius:999px;}
+
+        /* ===== Fields ===== */
+        .field{margin-bottom:14px;}
+        .field:last-child{margin-bottom:0;}
+        label{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#fff;opacity:.7;margin-bottom:7px;letter-spacing:.02em;}
+        label b{color:#fff;opacity:.95;font-weight:500;}
+        label .unit{font-size:11px;color:#fff;opacity:.8;border:1px solid rgba(255,255,255,.3);border-radius:5px;padding:1px 7px;background:rgba(255,255,255,.08);}
+        input{
+            width:100%;padding:12px 13px;color:#fff;
+            background:rgba(255,255,255,0.12);
+            border:1px solid rgba(255,255,255,0.22);border-radius:11px;
+            font-size:17px;font-family:inherit;outline:none;
+            backdrop-filter:blur(6px);
+            transition:border-color .18s, box-shadow .18s, background .18s;
+        }
+        input::placeholder{color:rgba(255,255,255,.4);}
+        input:focus{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.18);box-shadow:0 0 0 3px rgba(255,255,255,.15);}
+        input[type=number]{font-variant-numeric:tabular-nums;letter-spacing:.02em;}
+        input[type=date]{color-scheme:light;}
+        .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+        .tip{display:flex;gap:8px;font-size:12px;color:#fff;opacity:.6;line-height:1.5;margin-top:12px;padding-top:11px;border-top:1px dashed rgba(255,255,255,.25);}
+        .tip .ico{opacity:.85;}
+
+        /* ===== Button ===== */
+        .calc{
+            width:100%;margin:4px 0 22px;position:relative;
+            padding:16px;border:none;border-radius:13px;cursor:pointer;
+            font-family:"Noto Serif HK",serif;font-weight:900;font-size:17px;letter-spacing:.14em;color:#fff;
+            background:linear-gradient(135deg,rgba(255,255,255,.28),rgba(255,255,255,.12));
+            border:1px solid rgba(255,255,255,.3);
+            backdrop-filter:blur(12px);
+            box-shadow:0 8px 26px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.3);
+            opacity:0;animation:rise .6s .66s ease forwards;
+            transition:transform .12s, box-shadow .2s, background .2s;
+        }
+        .calc:hover{transform:translateY(-2px);background:linear-gradient(135deg,rgba(255,255,255,.36),rgba(255,255,255,.16));box-shadow:0 12px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.3);}
+        .calc:active{transform:translateY(0) scale(.99);}
+        .calc .arrow{display:inline-block;margin-left:6px;}
+
+        /* ===== Result ===== */
+        .result-card{overflow:hidden;padding-top:20px;}
+        .r-line{display:flex;justify-content:space-between;align-items:baseline;padding:8px 2px;font-size:15px;border-bottom:1px dashed rgba(255,255,255,.18);}
+        .r-line .lbl{color:#fff;opacity:.65;}
+        .r-line .val{font-variant-numeric:tabular-nums;font-weight:500;color:#fff;opacity:.95;}
+        .r-line .val.plus{color:#a6ffc9;}
+        .r-line .val.minus{color:#ffb4bd;}
+        .r-line.total{border-bottom:none;font-size:16px;font-weight:700;margin-top:4px;}
+        .sub-item{padding-left:16px;font-size:13px;border-bottom:none;}
+        .sub-item .lbl{opacity:.5;}
+        .sub-item .val.minus{opacity:.8;}
+
+        /* verdict block */
+        .verdict{
+            margin-top:14px;padding:14px;border-radius:12px;position:relative;overflow:hidden;
+            display:flex;align-items:center;justify-content:space-between;gap:12px;
+            background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);
+            backdrop-filter:blur(6px);
+        }
+        .verdict .v-label{font-family:"Noto Serif HK",serif;font-weight:700;font-size:16px;letter-spacing:.03em;color:#fff;}
+        .verdict .v-sub{display:block;font-size:11px;opacity:.6;font-weight:400;letter-spacing:.02em;margin-top:4px;font-variant-numeric:tabular-nums;}
+        .verdict .v-num{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1;color:#fff;}
+        .verdict .v-num small{font-size:14px;font-weight:500;margin-right:3px;opacity:.7;}
+        .verdict.profit{border-color:rgba(166,255,201,.45);background:linear-gradient(120deg,rgba(166,255,201,.18),rgba(255,255,255,.08));}
+        .verdict.loss{border-color:rgba(255,180,189,.45);background:linear-gradient(120deg,rgba(255,180,189,.18),rgba(255,255,255,.08));}
+        .verdict.break{border-color:rgba(255,255,255,.4);}
+        .verdict .emoji{font-size:20px;}
+
+        @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+        @keyframes pop{0%{opacity:0;transform:scale(.92);}60%{transform:scale(1.02);}100%{opacity:1;transform:scale(1);}}
+        .result-card .verdict{animation:pop .4s ease;}
+        .result-card .r-line{animation:rise .35s ease backwards;}
+        .result-card .r-line:nth-child(1){animation-delay:.02s;}
+        .result-card .r-line:nth-child(2){animation-delay:.05s;}
+        .result-card .r-line:nth-child(3){animation-delay:.08s;}
+        .result-card .r-line:nth-child(4){animation-delay:.11s;}
+        .result-card .r-line:nth-child(5){animation-delay:.14s;}
+        .result-card .r-line:nth-child(6){animation-delay:.17s;}
+        .result-card .r-line:nth-child(7){animation-delay:.20s;}
+        .result-card .r-line:nth-child(8){animation-delay:.23s;}
+        .result-card .r-line:nth-child(9){animation-delay:.26s;}
+
+        @media (max-width:420px){
+            .grid2{grid-template-columns:1fr;}
+            .verdict .v-num{font-size:26px;}
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrap">
+
+    <header class="masthead">
+        <div class="brand"><span class="dot"></span>每日帳本 · HK$</div>
+        <h1>外賣盈虧計數器</h1>
+        <div class="sub">輸入今日實收 · 系統算出淨利</div>
+    </header>
+
+    <section class="glass">
+        <div class="g-head">
+            <div class="g-ico">📅</div>
+            <h2>記帳日期</h2>
+            <span class="tag">DAILY</span>
+        </div>
+        <div class="field">
+            <input type="date" id="recordDate">
+        </div>
+    </section>
+
+    <section class="glass">
+        <div class="g-head">
+            <div class="g-ico">💰</div>
+            <h2>平台收入</h2>
+            <span class="tag">已扣費用</span>
+        </div>
+        <div class="field">
+            <label><b>今日平台實收</b><span class="unit">HKD</span></label>
+            <input type="number" step="0.01" id="platformIncome" placeholder="0.00" inputmode="decimal">
+        </div>
+        <div class="tip"><span class="ico">✦</span><span>填 KeeTa 後台「實收」欄位，佣金、配送費、優惠已自動扣好。</span></div>
+    </section>
+
+    <section class="glass">
+        <div class="g-head">
+            <div class="g-ico">🥬</div>
+            <h2>變動成本 · 當日</h2>
+            <span class="tag">COGS</span>
+        </div>
+        <div class="field">
+            <label><b>今日食材總成本</b><span class="unit">HKD</span></label>
+            <input type="number" step="0.01" id="foodCost" placeholder="0.00" inputmode="decimal">
+        </div>
+        <div class="field">
+            <label><b>包裝耗材費</b><span class="unit">HKD</span></label>
+            <input type="number" step="0.01" id="packCost" placeholder="0.00" inputmode="decimal">
+        </div>
+    </section>
+
+    <section class="glass">
+        <div class="g-head">
+            <div class="g-ico">🏠</div>
+            <h2>每月固定開支</h2>
+            <span class="tag">自動攤每日</span>
+        </div>
+        <div class="grid2">
+            <div class="field">
+                <label><b>月租金</b><span class="unit">HKD</span></label>
+                <input type="number" step="0.01" id="rentMonth" placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="field">
+                <label><b>月人工工資</b><span class="unit">HKD</span></label>
+                <input type="number" step="0.01" id="salaryMonth" placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="field">
+                <label><b>每日水電</b><span class="unit">HKD</span></label>
+                <input type="number" step="0.01" id="utilDay" placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="field">
+                <label><b>每日雜費</b><span class="unit">HKD</span></label>
+                <input type="number" step="0.01" id="miscDay" placeholder="0.00" inputmode="decimal">
+            </div>
+        </div>
+        <div class="tip"><span class="ico">✦</span><span>月租金與工資 ÷30 自動攤銷到每一天。</span></div>
+    </section>
+
+    <button class="calc" onclick="calc()">開始計算盈虧<span class="arrow">→</span></button>
+
+    <div id="resultBox"></div>
+
+    </div>
+
+<script>
+function loadData(){
+    const saved = localStorage.getItem('keetaCalc');
+    if(!saved) return;
+    const d = JSON.parse(saved);
+    document.getElementById('platformIncome').value=d.platformIncome||'';
+    document.getElementById('foodCost').value=d.foodCost||'';
+    document.getElementById('packCost').value=d.packCost||'';
+    document.getElementById('rentMonth').value=d.rentMonth||'';
+    document.getElementById('salaryMonth').value=d.salaryMonth||'';
+    document.getElementById('utilDay').value=d.utilDay||'';
+    document.getElementById('miscDay').value=d.miscDay||'';
+    document.getElementById('recordDate').value=d.recordDate||new Date().toISOString().slice(0,10);
+}
+function saveData(){
+    const obj={
+        platformIncome:document.getElementById('platformIncome').value,
+        foodCost:document.getElementById('foodCost').value,
+        packCost:document.getElementById('packCost').value,
+        rentMonth:document.getElementById('rentMonth').value,
+        salaryMonth:document.getElementById('salaryMonth').value,
+        utilDay:document.getElementById('utilDay').value,
+        miscDay:document.getElementById('miscDay').value,
+        recordDate:document.getElementById('recordDate').value,
+    };
+    localStorage.setItem('keetaCalc',JSON.stringify(obj));
+}
+function num(id){return parseFloat(document.getElementById(id).value)||0;}
+
+function calc(){
+    saveData();
+    const platformIncome = num('platformIncome');
+    const foodCost = num('foodCost');
+    const packCost = num('packCost');
+    const rentDay = num('rentMonth') / 30;
+    const salaryDay = num('salaryMonth') / 30;
+    const utilDay = num('utilDay');
+    const miscDay = num('miscDay');
+
+    const grossProfit = platformIncome - foodCost - packCost;
+    const fixedDayCost = rentDay + salaryDay + utilDay + miscDay;
+    const netProfit = grossProfit - fixedDayCost;
+    const grossRate = platformIncome>0 ? ((grossProfit / platformIncome)*100).toFixed(2) : 0;
+
+    const rd = document.getElementById('recordDate').value || new Date().toISOString().slice(0,10);
+    const dateLabel = rd.split('-').reverse().join('/');
+
+    let cls,status,emoji;
+    if(netProfit>0){cls='profit';status='今日盈利';emoji='🏆';}
+    else if(netProfit<0){cls='loss';status='今日虧損';emoji='📉';}
+    else {cls='break';status='剛好保本';emoji='⚖️';}
+
+    const fixedItem = (lbl,v)=>`
+        <div class="r-line sub-item"><span class="lbl">${lbl}</span><span class="val minus">-${v.toFixed(2)}</span></div>`;
+
+    const html=`
+    <div class="glass result-card ${cls}">
+        <div class="r-line total"><span class="lbl">平台實收</span><span class="val plus">+${platformIncome.toFixed(2)}</span></div>
+        <div class="r-line"><span class="lbl">食材成本</span><span class="val minus">-${foodCost.toFixed(2)}</span></div>
+        <div class="r-line"><span class="lbl">包裝耗材</span><span class="val minus">-${packCost.toFixed(2)}</span></div>
+        <div class="r-line total"><span class="lbl">毛利 · ${grossRate}%</span><span class="val">${grossProfit.toFixed(2)}</span></div>
+        <div class="r-line"><span class="lbl">當日固定開支</span><span class="val minus">-${fixedDayCost.toFixed(2)}</span></div>
+        ${fixedItem('租金', rentDay)}
+        ${fixedItem('人工', salaryDay)}
+        ${fixedItem('水電', utilDay)}
+        ${fixedItem('雜費', miscDay)}
+        <div class="verdict ${cls}">
+            <div class="v-label">${emoji} ${status}
+                <span class="v-sub">${dateLabel} · 實收 ${platformIncome.toFixed(2)} − 食材/包裝 ${(foodCost+packCost).toFixed(2)} − 固定 ${fixedDayCost.toFixed(2)}</span>
+            </div>
+            <div class="v-num"><small>HK$</small>${netProfit.toFixed(2)}</div>
+        </div>
+    </div>
+    `;
+    document.getElementById('resultBox').innerHTML=html;
+    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}
+window.onload=loadData;
+</script>
+</body>
+</html>
