@@ -182,6 +182,95 @@
             .grid4{grid-template-columns:1fr 1fr;}
             .verdict .v-num{font-size:26px;}
         }
+
+        /* ===== Floating history ===== */
+        .fab{
+            position:fixed;right:18px;bottom:22px;z-index:60;
+            width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;
+            display:grid;place-items:center;font-size:22px;color:#fff;
+            background:linear-gradient(135deg,rgba(255,255,255,.32),rgba(255,255,255,.14));
+            border:1px solid rgba(255,255,255,.35);
+            backdrop-filter:blur(12px);
+            box-shadow:0 8px 26px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.35);
+            opacity:0;animation:rise .5s .8s ease forwards;
+            transition:transform .12s, background .2s;
+        }
+        .fab:hover{transform:translateY(-2px) scale(1.04);background:linear-gradient(135deg,rgba(255,255,255,.42),rgba(255,255,255,.2));}
+        .fab:active{transform:scale(.96);}
+        .fab .dot-badge{
+            position:absolute;top:2px;right:2px;min-width:18px;height:18px;padding:0 4px;
+            border-radius:999px;font-size:11px;line-height:18px;text-align:center;
+            background:#ff5f7a;color:#fff;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,.3);
+            display:none;
+        }
+
+        .drawer-overlay{
+            position:fixed;inset:0;z-index:70;background:rgba(10,10,30,.45);
+            backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .25s;
+        }
+        .drawer-overlay.show{opacity:1;pointer-events:auto;}
+        .drawer{
+            position:fixed;top:0;right:0;bottom:0;z-index:80;
+            width:min(360px,88vw);background:linear-gradient(160deg,#5b6fd8 0%,#6d4fa8 100%);
+            box-shadow:-12px 0 34px rgba(0,0,0,.35);
+            transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+            display:flex;flex-direction:column;overflow:hidden;
+        }
+        .drawer.show{transform:none;}
+        .drawer-head{
+            padding:20px 18px 14px;display:flex;align-items:center;gap:10px;
+            border-bottom:1px solid rgba(255,255,255,.18);
+        }
+        .drawer-head h3{font-family:"Noto Serif HK",serif;font-weight:700;font-size:17px;color:#fff;letter-spacing:.03em;}
+        .drawer-head .h-count{margin-left:auto;font-size:12px;color:#fff;opacity:.7;}
+        .drawer-head .close{
+            width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;
+            background:rgba(255,255,255,.14);color:#fff;font-size:15px;
+        }
+        .drawer-head .close:hover{background:rgba(255,255,255,.26);}
+        .drawer-body{flex:1;overflow-y:auto;padding:14px 12px 20px;}
+        .drawer-foot{padding:10px 14px 16px;border-top:1px solid rgba(255,255,255,.14);}
+
+        .h-filter{display:flex;gap:6px;margin-bottom:12px;}
+        .h-filter button{
+            flex:1;padding:7px 4px;border:none;border-radius:8px;cursor:pointer;
+            font-size:13px;color:#fff;opacity:.6;background:rgba(255,255,255,.1);
+        }
+        .h-filter button.active{opacity:1;background:rgba(255,255,255,.24);}
+
+        .h-item{
+            background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);
+            border-radius:12px;padding:11px 12px;margin-bottom:9px;cursor:pointer;
+            transition:background .15s;position:relative;
+        }
+        .h-item:hover{background:rgba(255,255,255,.18);}
+        .h-item .top{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+        .h-item .datelabel{font-weight:600;font-size:14px;color:#fff;}
+        .h-item .badge{
+            font-size:10.5px;letter-spacing:.08em;border-radius:6px;padding:2px 7px;color:#fff;
+        }
+        .h-item .badge.daily{background:rgba(64,160,255,.35);border:1px solid rgba(100,190,255,.4);}
+        .h-item .badge.monthly{background:rgba(255,180,90,.32);border:1px solid rgba(255,200,120,.4);}
+        .h-item .time{margin-left:auto;font-size:11px;color:#fff;opacity:.55;}
+        .h-item .row{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:#fff;opacity:.85;}
+        .h-item .net{font-weight:800;font-size:16px;font-variant-numeric:tabular-nums;}
+        .h-item .net.profit{color:#a6ffc9;}
+        .h-item .net.loss{color:#ffb4bd;}
+        .h-item .del{
+            position:absolute;right:8px;bottom:8px;width:26px;height:26px;border-radius:7px;border:none;
+            background:rgba(255,255,255,.1);color:#ffd0d6;font-size:13px;cursor:pointer;opacity:0;transition:opacity .15s;
+        }
+        .h-item:hover .del{opacity:1;}
+        .h-item .del:hover{background:rgba(255,80,110,.4);}
+
+        .h-empty{padding:30px 10px;text-align:center;color:#fff;opacity:.55;font-size:14px;}
+        .clear-btn{
+            width:100%;padding:11px;border:none;border-radius:10px;cursor:pointer;
+            font-size:14px;color:#ffd9de;background:rgba(255,255,255,.08);
+            border:1px solid rgba(255,255,255,.18);
+        }
+        .clear-btn:hover{background:rgba(255,80,110,.3);}
+        .load-hint{font-size:11px;color:#fff;opacity:.55;text-align:center;margin-bottom:8px;}
     </style>
 </head>
 <body>
@@ -195,8 +284,8 @@
     </header>
 
     <div class="tabs">
-        <button class="tab active" onclick="switchTab('daily',this)"><span class="t-ico">📅</span>每日帳本</button>
-        <button class="tab" onclick="switchTab('monthly',this)"><span class="t-ico">📈</span>月預測</button>
+        <button class="tab active" data-tab="daily" onclick="switchTab('daily',this)"><span class="t-ico">📅</span>每日帳本</button>
+        <button class="tab" data-tab="monthly" onclick="switchTab('monthly',this)"><span class="t-ico">📈</span>月預測</button>
     </div>
 
     <!-- ============ DAILY PANEL ============ -->
@@ -356,13 +445,170 @@
 
     </div>
 
+    <!-- Floating history button -->
+    <button class="fab" id="fab" onclick="openDrawer()" aria-label="歷史紀錄">🕘<span class="dot-badge" id="fabBadge">0</span></button>
+
+    <!-- Drawer overlay + drawer -->
+    <div class="drawer-overlay" id="overlay" onclick="closeDrawer()"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-head">
+            <h3>歷史紀錄</h3>
+            <span class="h-count" id="hCount">0 筆</span>
+            <button class="close" onclick="closeDrawer()">✕</button>
+        </div>
+        <div class="drawer-body">
+            <div class="h-filter" id="hFilter">
+                <button class="active" data-f="all" onclick="setFilter('all',this)">全部</button>
+                <button data-f="daily" onclick="setFilter('daily',this)">📅 日</button>
+                <button data-f="monthly" onclick="setFilter('monthly',this)">📈 月</button>
+            </div>
+            <div id="hList"></div>
+            <div class="load-hint" id="loadHint">點選任一筆可回填表單並查看詳情</div>
+        </div>
+        <div class="drawer-foot">
+            <button class="clear-btn" onclick="clearHistory()">清空全部紀錄</button>
+        </div>
+    </div>
+
 <script>
 var activeTab = 'daily';
+var hFilter = 'all';
+var historyRecords = [];   // array of {type:'daily'|'monthly', timestamp, netProfit, ...inputs}
+
+/* ---------------- History persistence (localStorage JSON) ---------------- */
+function loadHistory(){
+    try{
+        const s = localStorage.getItem('keetaHistory');
+        historyRecords = s ? JSON.parse(s) : [];
+        if(!Array.isArray(historyRecords)) historyRecords = [];
+    }catch(e){ historyRecords = []; }
+    return historyRecords;
+}
+function persistHistory(){
+    localStorage.setItem('keetaHistory', JSON.stringify(historyRecords));
+    updateBadge();
+}
+function addRecord(rec){
+    historyRecords.unshift(rec);           // newest first
+    persistHistory();
+}
+function updateBadge(){
+    const b = document.getElementById('fabBadge');
+    b.textContent = historyRecords.length;
+    b.style.display = historyRecords.length ? 'block' : 'none';
+    document.getElementById('hCount').textContent = historyRecords.length + ' 筆';
+}
+
+/* ---------------- Drawer open / close / filter ---------------- */
+function openDrawer(){
+    renderHistory();
+    document.getElementById('drawer').classList.add('show');
+    document.getElementById('overlay').classList.add('show');
+}
+function closeDrawer(){
+    document.getElementById('drawer').classList.remove('show');
+    document.getElementById('overlay').classList.remove('show');
+}
+function setFilter(f, btn){
+    hFilter = f;
+    document.querySelectorAll('#hFilter button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderHistory();
+}
+
+function fmtNum(v){ return ( +v || 0 ).toFixed(2); }
+
+function renderHistory(){
+    // guard: if stored data got corrupted to a non-array, reset it
+    if(!Array.isArray(historyRecords)){
+        historyRecords = [];
+        persistHistory();
+    }
+    const list = document.getElementById('hList');
+    const filtered = historyRecords.filter(h => hFilter==='all' || h.type===hFilter);
+    if(!filtered.length){
+        list.innerHTML = '<div class="h-empty">還沒有計算紀錄<br>每次按「開始計算」就會自動存一筆</div>';
+        document.getElementById('loadHint').style.display='none';
+        return;
+    }
+    document.getElementById('loadHint').style.display='';
+    list.innerHTML = filtered.map(function(h,i){
+        const isDaily = h.type==='daily';
+        const badge = isDaily ? '<span class="badge daily">日</span>' : '<span class="badge monthly">月</span>';
+        const label = isDaily
+            ? (h.date || '無日期')
+            : (h.month || h.monthLabel || '月份');
+        const sub = isDaily
+            ? '實收 ' + fmtNum(h.platformIncome) + ' · 淨利 ' + fmtNum(h.netProfit)
+            : '營收 ' + fmtNum(h.monthRevenue) + ' · 淨利 ' + fmtNum(h.netProfit);
+        const netCls = h.netProfit>0 ? 'profit' : (h.netProfit<0 ? 'loss' : '');
+        const time = h.timeText || h.timestamp || '';
+        // keep original index reference to the full array (raw index)
+        const rawIdx = historyRecords.indexOf(h);
+        return '<div class="h-item" onclick="loadRecord('+rawIdx+')">'+
+            '<div class="top">'+badge+'<span class="datelabel">'+label+'</span><span class="time">'+time+'</span></div>'+
+            '<div class="row"><span>'+sub+'</span><span class="net '+netCls+'">'+ (h.netProfit>=0?'+':'−') + 'HK$' + fmtNum(Math.abs(h.netProfit)) +'</span></div>'+
+            '<button class="del" onclick="event.stopPropagation();delRecord('+rawIdx+')" title="刪除">🗑</button>'+
+        '</div>';
+    }).join('');
+}
+
+function delRecord(idx){
+    if(idx<0 || idx>=historyRecords.length) return;
+    historyRecords.splice(idx,1);
+    persistHistory();
+    renderHistory();
+}
+function clearHistory(){
+    if(!historyRecords.length) { closeDrawer(); return; }
+    if(confirm('確定清空全部 '+historyRecords.length+' 筆紀錄？此操作無法復原。')){
+        historyRecords = [];
+        persistHistory();
+        renderHistory();
+    }
+}
+
+/* ---------------- Load a history record back into the form ---------------- */
+function loadRecord(idx){
+    const h = historyRecords[idx];
+    if(!h) return;
+    if(h.type==='daily'){
+        activeTab='daily'; switchTab('daily', document.querySelector('.tab[data-tab="daily"]'));
+        const g = function(k){ return document.getElementById(k); };
+        g('platformIncome').value = h.platformIncome!=null ? +h.platformIncome : '';
+        g('foodCost').value = h.foodCost!=null ? +h.foodCost : '';
+        g('packCost').value = h.packCost!=null ? +h.packCost : '';
+        g('rentMonth').value = h.rentMonth!=null ? +h.rentMonth : '';
+        g('salaryMonth').value = h.salaryMonth!=null ? +h.salaryMonth : '';
+        g('utilDay').value = h.utilDay!=null ? +h.utilDay : '';
+        g('miscDay').value = h.miscDay!=null ? +h.miscDay : '';
+        if(h.date) g('recordDate').value = h.date;
+    } else {
+        activeTab='monthly'; switchTab('monthly', document.querySelector('.tab[data-tab="monthly"]'));
+        const g = function(k){ return document.getElementById(k); };
+        g('targetMonth').value = h.month || '';
+        g('operatingDays').value = h.days || 30;
+        g('dailyAvgIncome').value = h.dailyAvgIncome!=null ? +h.dailyAvgIncome : '';
+        g('dailyFood').value = h.dailyFood!=null ? +h.dailyFood : '';
+        g('dailyPack').value = h.dailyPack!=null ? +h.dailyPack : '';
+        g('mRentMonth').value = h.mRentMonth!=null ? +h.mRentMonth : '';
+        g('mSalaryMonth').value = h.mSalaryMonth!=null ? +h.mSalaryMonth : '';
+        g('mUtilMonth').value = h.mUtilMonth!=null ? +h.mUtilMonth : '';
+        g('mMiscMonth').value = h.mMiscMonth!=null ? +h.mMiscMonth : '';
+    }
+    closeDrawer();
+    document.getElementById('resultBox').innerHTML =
+        '<div class="glass result-card break"><div class="r-line total"><span class="lbl">已載入歷史紀錄</span>'+
+        '<span class="val plus">'+(h.type==='daily'?'今日帳':'月預測')+' · '+ (h.type==='daily'?(h.date||'') : (h.month||h.monthLabel||'')) +'</span></div>'+
+        '<div class="verdict break"><div class="v-label">已回填表單<span class="v-sub">再按「開始計算」即可重新計算或另存</span></div>'+
+        '<div class="v-num"><small>HK$</small>'+ (h.netProfit>=0?'':'−') + fmtNum(Math.abs(h.netProfit)) +'</div></div></div>';
+    window.scrollTo({top:0,behavior:'smooth'});
+}
 
 function switchTab(tab, btn){
     activeTab = tab;
     document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
+    if(btn) btn.classList.add('active');
     document.getElementById('panel-daily').style.display = tab==='daily' ? '' : 'none';
     document.getElementById('panel-monthly').style.display = tab==='monthly' ? '' : 'none';
     document.getElementById('resultBox').innerHTML='';
@@ -477,6 +723,18 @@ function calcDaily(){
     </div>
     `;
     document.getElementById('resultBox').innerHTML=html;
+    // --- save a history record ---
+    const now = new Date();
+    const pad = n => (''+n).padStart(2,'0');
+    addRecord({
+        type:'daily',
+        date: rd,
+        timeText: pad(now.getHours())+':'+pad(now.getMinutes()),
+        timestamp: now.toISOString(),
+        netProfit: +netProfit.toFixed(2),
+        platformIncome, foodCost, packCost,
+        rentMonth: num('rentMonth'), salaryMonth: num('salaryMonth'), utilDay, miscDay
+    });
     window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
 }
 
@@ -538,9 +796,30 @@ function calcMonthly(){
     </div>
     `;
     document.getElementById('resultBox').innerHTML=html;
+    // --- save a history record ---
+    const now = new Date();
+    const pad = n => (''+n).padStart(2,'0');
+    addRecord({
+        type:'monthly',
+        month: tm || (now.getFullYear()+'-'+pad(now.getMonth()+1)),
+        monthLabel: monthLabel,
+        timeText: pad(now.getHours())+':'+pad(now.getMinutes()),
+        timestamp: now.toISOString(),
+        netProfit: +monthNet.toFixed(2),
+        monthRevenue: +monthRevenue.toFixed(2),
+        days, dailyAvgIncome, dailyFood, dailyPack,
+        mRentMonth: rentMonth,
+        mSalaryMonth: salaryMonth,
+        mUtilMonth: utilMonth,
+        mMiscMonth: miscMonth
+    });
     window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
 }
-window.onload=loadData;
+window.onload=function(){
+    loadData();
+    loadHistory();
+    updateBadge();
+};
 </script>
 </body>
 </html>
