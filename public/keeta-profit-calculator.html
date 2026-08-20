@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KeeTa 盈虧 — 每日帳本</title>
+    <title>KeeTa 盈虧 — 每日帳本 / 月預測</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;700&family=Noto+Serif+HK:wght@600;700;900&display=swap" rel="stylesheet">
@@ -18,7 +18,6 @@
             background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
             position:relative;overflow-x:hidden;
         }
-        /* 漂浮光斑，強化玻璃感 */
         body::before,body::after{
             content:"";position:fixed;border-radius:50%;pointer-events:none;z-index:0;
             filter:blur(60px);opacity:.5;
@@ -28,8 +27,7 @@
 
         .wrap{position:relative;z-index:1;max-width:640px;margin:0 auto;}
 
-        /* ===== Header ===== */
-        .masthead{text-align:center;padding:34px 0 22px;}
+        .masthead{text-align:center;padding:34px 0 20px;}
         .brand{
             display:inline-flex;align-items:center;gap:10px;
             font-family:"Noto Serif HK",serif;font-weight:700;font-size:14px;
@@ -48,7 +46,28 @@
         .sub{margin-top:10px;color:#fff;opacity:.75;font-size:14px;letter-spacing:.04em;
             opacity:0;animation:rise .6s .32s ease forwards;}
 
-        /* ===== Glass card ===== */
+        .tabs{
+            display:grid;grid-template-columns:1fr 1fr;gap:10px;
+            max-width:420px;margin:0 auto 20px;padding:6px;
+            background:rgba(255,255,255,0.10);
+            border:1px solid rgba(255,255,255,0.2);
+            border-radius:14px;backdrop-filter:blur(12px);
+            opacity:0;animation:rise .6s .4s ease forwards;
+        }
+        .tab{
+            padding:12px 8px;border:none;border-radius:10px;cursor:pointer;
+            font-family:"Noto Serif HK",serif;font-weight:700;font-size:14px;letter-spacing:.04em;color:#fff;
+            background:transparent;opacity:.55;transition:opacity .18s, background .18s, transform .12s;
+            display:flex;align-items:center;justify-content:center;gap:8px;
+        }
+        .tab .t-ico{font-size:16px;}
+        .tab:hover{opacity:.85;}
+        .tab.active{
+            opacity:1;
+            background:linear-gradient(135deg,rgba(255,255,255,.30),rgba(255,255,255,.14));
+            box-shadow:0 2px 12px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.35);
+        }
+
         .glass{
             position:relative;
             background:rgba(255,255,255,0.15);
@@ -61,10 +80,14 @@
             box-shadow:0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
             opacity:0;animation:rise .6s ease forwards;
         }
-        .glass:nth-of-type(1){animation-delay:.34s;}
-        .glass:nth-of-type(2){animation-delay:.42s;}
-        .glass:nth-of-type(3){animation-delay:.50s;}
-        .glass:nth-of-type(4){animation-delay:.58s;}
+        #panel-daily .glass:nth-of-type(1){animation-delay:.34s;}
+        #panel-daily .glass:nth-of-type(2){animation-delay:.42s;}
+        #panel-daily .glass:nth-of-type(3){animation-delay:.50s;}
+        #panel-daily .glass:nth-of-type(4){animation-delay:.58s;}
+        #panel-monthly .glass:nth-of-type(1){animation-delay:.34s;}
+        #panel-monthly .glass:nth-of-type(2){animation-delay:.42s;}
+        #panel-monthly .glass:nth-of-type(3){animation-delay:.50s;}
+        #panel-monthly .glass:nth-of-type(4){animation-delay:.58s;}
         .g-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
         .g-ico{
             width:34px;height:34px;border-radius:10px;flex:none;
@@ -76,7 +99,6 @@
         .g-head h2{font-family:"Noto Serif HK",serif;font-weight:700;font-size:16px;color:#fff;opacity:.95;letter-spacing:.03em;}
         .g-head .tag{margin-left:auto;font-size:10.5px;color:#fff;opacity:.6;letter-spacing:.12em;border:1px solid rgba(255,255,255,.25);padding:3px 9px;border-radius:999px;}
 
-        /* ===== Fields ===== */
         .field{margin-bottom:14px;}
         .field:last-child{margin-bottom:0;}
         label{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#fff;opacity:.7;margin-bottom:7px;letter-spacing:.02em;}
@@ -94,11 +116,12 @@
         input:focus{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.18);box-shadow:0 0 0 3px rgba(255,255,255,.15);}
         input[type=number]{font-variant-numeric:tabular-nums;letter-spacing:.02em;}
         input[type=date]{color-scheme:light;}
+        input[type=month]{color-scheme:light;}
         .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+        .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
         .tip{display:flex;gap:8px;font-size:12px;color:#fff;opacity:.6;line-height:1.5;margin-top:12px;padding-top:11px;border-top:1px dashed rgba(255,255,255,.25);}
         .tip .ico{opacity:.85;}
 
-        /* ===== Button ===== */
         .calc{
             width:100%;margin:4px 0 22px;position:relative;
             padding:16px;border:none;border-radius:13px;cursor:pointer;
@@ -114,7 +137,6 @@
         .calc:active{transform:translateY(0) scale(.99);}
         .calc .arrow{display:inline-block;margin-left:6px;}
 
-        /* ===== Result ===== */
         .result-card{overflow:hidden;padding-top:20px;}
         .r-line{display:flex;justify-content:space-between;align-items:baseline;padding:8px 2px;font-size:15px;border-bottom:1px dashed rgba(255,255,255,.18);}
         .r-line .lbl{color:#fff;opacity:.65;}
@@ -126,7 +148,6 @@
         .sub-item .lbl{opacity:.5;}
         .sub-item .val.minus{opacity:.8;}
 
-        /* verdict block */
         .verdict{
             margin-top:14px;padding:14px;border-radius:12px;position:relative;overflow:hidden;
             display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -158,6 +179,7 @@
 
         @media (max-width:420px){
             .grid2{grid-template-columns:1fr;}
+            .grid4{grid-template-columns:1fr 1fr;}
             .verdict .v-num{font-size:26px;}
         }
     </style>
@@ -167,97 +189,214 @@
     <div class="wrap">
 
     <header class="masthead">
-        <div class="brand"><span class="dot"></span>每日帳本 · HK$</div>
+        <div class="brand"><span class="dot"></span>外賣盈虧 · HK$</div>
         <h1>外賣盈虧計數器</h1>
-        <div class="sub">輸入今日實收 · 系統算出淨利</div>
+        <div class="sub">每日記帳，或預測整月</div>
     </header>
 
-    <section class="glass">
-        <div class="g-head">
-            <div class="g-ico">📅</div>
-            <h2>記帳日期</h2>
-            <span class="tag">DAILY</span>
-        </div>
-        <div class="field">
-            <input type="date" id="recordDate">
-        </div>
-    </section>
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('daily',this)"><span class="t-ico">📅</span>每日帳本</button>
+        <button class="tab" onclick="switchTab('monthly',this)"><span class="t-ico">📈</span>月預測</button>
+    </div>
 
-    <section class="glass">
-        <div class="g-head">
-            <div class="g-ico">💰</div>
-            <h2>平台收入</h2>
-            <span class="tag">已扣費用</span>
-        </div>
-        <div class="field">
-            <label><b>今日平台實收</b><span class="unit">HKD</span></label>
-            <input type="number" step="0.01" id="platformIncome" placeholder="0.00" inputmode="decimal">
-        </div>
-        <div class="tip"><span class="ico">✦</span><span>填 KeeTa 後台「實收」欄位，佣金、配送費、優惠已自動扣好。</span></div>
-    </section>
-
-    <section class="glass">
-        <div class="g-head">
-            <div class="g-ico">🥬</div>
-            <h2>變動成本 · 當日</h2>
-            <span class="tag">COGS</span>
-        </div>
-        <div class="field">
-            <label><b>今日食材總成本</b><span class="unit">HKD</span></label>
-            <input type="number" step="0.01" id="foodCost" placeholder="0.00" inputmode="decimal">
-        </div>
-        <div class="field">
-            <label><b>包裝耗材費</b><span class="unit">HKD</span></label>
-            <input type="number" step="0.01" id="packCost" placeholder="0.00" inputmode="decimal">
-        </div>
-    </section>
-
-    <section class="glass">
-        <div class="g-head">
-            <div class="g-ico">🏠</div>
-            <h2>每月固定開支</h2>
-            <span class="tag">自動攤每日</span>
-        </div>
-        <div class="grid2">
-            <div class="field">
-                <label><b>月租金</b><span class="unit">HKD</span></label>
-                <input type="number" step="0.01" id="rentMonth" placeholder="0.00" inputmode="decimal">
+    <!-- ============ DAILY PANEL ============ -->
+    <div id="panel-daily">
+        <section class="glass">
+            <div class="g-head">
+                <div class="g-ico">📅</div>
+                <h2>記帳日期</h2>
+                <span class="tag">DAILY</span>
             </div>
             <div class="field">
-                <label><b>月人工工資</b><span class="unit">HKD</span></label>
-                <input type="number" step="0.01" id="salaryMonth" placeholder="0.00" inputmode="decimal">
+                <input type="date" id="recordDate">
             </div>
-            <div class="field">
-                <label><b>每日水電</b><span class="unit">HKD</span></label>
-                <input type="number" step="0.01" id="utilDay" placeholder="0.00" inputmode="decimal">
-            </div>
-            <div class="field">
-                <label><b>每日雜費</b><span class="unit">HKD</span></label>
-                <input type="number" step="0.01" id="miscDay" placeholder="0.00" inputmode="decimal">
-            </div>
-        </div>
-        <div class="tip"><span class="ico">✦</span><span>月租金與工資 ÷30 自動攤銷到每一天。</span></div>
-    </section>
+        </section>
 
-    <button class="calc" onclick="calc()">開始計算盈虧<span class="arrow">→</span></button>
+        <section class="glass">
+            <div class="g-head">
+                <div class="g-ico">💰</div>
+                <h2>平台收入</h2>
+                <span class="tag">已扣費用</span>
+            </div>
+            <div class="field">
+                <label><b>今日平台實收</b><span class="unit">HKD</span></label>
+                <input type="number" step="0.01" id="platformIncome" placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="tip"><span class="ico">✦</span><span>填 KeeTa 後台「實收」欄位，佣金、配送費、優惠已自動扣好。</span></div>
+        </section>
+
+        <section class="glass">
+            <div class="g-head">
+                <div class="g-ico">🥬</div>
+                <h2>變動成本 · 當日</h2>
+                <span class="tag">COGS</span>
+            </div>
+            <div class="field">
+                <label><b>今日食材總成本</b><span class="unit">HKD</span></label>
+                <input type="number" step="0.01" id="foodCost" placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="field">
+                <label><b>包裝耗材費</b><span class="unit">HKD</span></label>
+                <input type="number" step="0.01" id="packCost" placeholder="0.00" inputmode="decimal">
+            </div>
+        </section>
+
+        <section class="glass">
+            <div class="g-head">
+                <div class="g-ico">🏠</div>
+                <h2>每月固定開支</h2>
+                <span class="tag">自動攤每日</span>
+            </div>
+            <div class="grid2">
+                <div class="field">
+                    <label><b>月租金</b><span class="unit">HKD</span></label>
+                    <input type="number" step="0.01" id="rentMonth" placeholder="0.00" inputmode="decimal">
+                </div>
+                <div class="field">
+                    <label><b>月人工工資</b><span class="unit">HKD</span></label>
+                    <input type="number" step="0.01" id="salaryMonth" placeholder="0.00" inputmode="decimal">
+                </div>
+                <div class="field">
+                    <label><b>每日水電</b><span class="unit">HKD</span></label>
+                    <input type="number" step="0.01" id="utilDay" placeholder="0.00" inputmode="decimal">
+                </div>
+                <div class="field">
+                    <label><b>每日雜費</b><span class="unit">HKD</span></label>
+                    <input type="number" step="0.01" id="miscDay" placeholder="0.00" inputmode="decimal">
+                </div>
+            </div>
+            <div class="tip"><span class="ico">✦</span><span>月租金與工資 ÷30 自動攤銷到每一天。</span></div>
+        </section>
+    </div>
+
+    <!-- ============ MONTHLY PANEL ============ -->
+    <div id="panel-monthly" style="display:none;">
+        <section class="glass">
+            <div class="g-head">
+                <div class="g-ico">📅</div>
+                <h2>月份設定</h2>
+                <span class="tag">MONTHLY</span>
+            </div>
+            <div class="grid2">
+                <div class="field">
+                    <label><b>目標月份</b><span class="unit">YYYY-MM</span></label>
+                    <input type="month" id="targetMonth">
+                </div>
+                <div class="field">
+                    <label><b>營業天數</b><span class="unit">天</span></label>
+                    <input type="number" step="1" id="operatingDays" placeholder="30">
+                </div>
+            </div>
+            <div class="tip"><span class="ico">✦</span><span>營業天數 = 本月實際開門的天數（放假日、休息日不算）。</span></div>
+        </section>
+
+        <section class="glass">
+            <div class="g-head">
+                <div class="g-ico">💰</div>
+                <h2>每日平均收入</h2>
+                <span class="tag">已扣費用</span>
+            </div>
+            <div class="field">
+                <label><b>每日平均實收</b><span class="unit">HKD/天</span></label>
+                <input type="number" step="0.01" id="dailyAvgIncome" placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="tip"><span class="ico">✦</span><span>預期每天的平台實收。月營收 = 此值 × 營業天數。</span></div>
+        </section>
+
+        <section class="glass">
+            <div class="g-head">
+                <div class="g-ico">🥬</div>
+                <h2>每日平均變動成本</h2>
+                <span class="tag">COGS</span>
+            </div>
+            <div class="grid2">
+                <div class="field">
+                    <label><b>每日平均食材</b><span class="unit">HKD/天</span></label>
+                    <input type="number" step="0.01" id="dailyFood" placeholder="0.00" inputmode="decimal">
+                </div>
+                <div class="field">
+                    <label><b>每日平均包裝</b><span class="unit">HKD/天</span></label>
+                    <input type="number" step="0.01" id="dailyPack" placeholder="0.00" inputmode="decimal">
+                </div>
+            </div>
+            <div class="tip"><span class="ico">✦</span><span>整月變動成本 = 每日平均值 × 營業天數。</span></div>
+        </section>
+
+        <section class="glass">
+            <div class="g-head">
+                <div class="g-ico">🏠</div>
+                <h2>本月固定開支</h2>
+                <span class="tag">整月直接填</span>
+            </div>
+            <div class="grid4">
+                <div class="field">
+                    <label><b>租金</b><span class="unit">HKD</span></label>
+                    <input type="number" step="0.01" id="mRentMonth" placeholder="0.00" inputmode="decimal">
+                </div>
+                <div class="field">
+                    <label><b>人工</b><span class="unit">HKD</span></label>
+                    <input type="number" step="0.01" id="mSalaryMonth" placeholder="0.00" inputmode="decimal">
+                </div>
+                <div class="field">
+                    <label><b>水電</b><span class="unit">HKD</span></label>
+                    <input type="number" step="0.01" id="mUtilMonth" placeholder="0.00" inputmode="decimal">
+                </div>
+                <div class="field">
+                    <label><b>雜費</b><span class="unit">HKD</span></label>
+                    <input type="number" step="0.01" id="mMiscMonth" placeholder="0.00" inputmode="decimal">
+                </div>
+            </div>
+            <div class="tip"><span class="ico">✦</span><span>填整月總額，不做 ÷30 攤銷。</span></div>
+        </section>
+    </div>
+
+    <button class="calc" onclick="calc()">開始計算<span class="arrow">→</span></button>
 
     <div id="resultBox"></div>
 
     </div>
 
 <script>
+var activeTab = 'daily';
+
+function switchTab(tab, btn){
+    activeTab = tab;
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-daily').style.display = tab==='daily' ? '' : 'none';
+    document.getElementById('panel-monthly').style.display = tab==='monthly' ? '' : 'none';
+    document.getElementById('resultBox').innerHTML='';
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
 function loadData(){
-    const saved = localStorage.getItem('keetaCalc');
-    if(!saved) return;
-    const d = JSON.parse(saved);
-    document.getElementById('platformIncome').value=d.platformIncome||'';
-    document.getElementById('foodCost').value=d.foodCost||'';
-    document.getElementById('packCost').value=d.packCost||'';
-    document.getElementById('rentMonth').value=d.rentMonth||'';
-    document.getElementById('salaryMonth').value=d.salaryMonth||'';
-    document.getElementById('utilDay').value=d.utilDay||'';
-    document.getElementById('miscDay').value=d.miscDay||'';
-    document.getElementById('recordDate').value=d.recordDate||new Date().toISOString().slice(0,10);
+    // Daily
+    const ds = localStorage.getItem('keetaCalc');
+    if(ds){try{
+        const d = JSON.parse(ds);
+        document.getElementById('platformIncome').value=d.platformIncome||'';
+        document.getElementById('foodCost').value=d.foodCost||'';
+        document.getElementById('packCost').value=d.packCost||'';
+        document.getElementById('rentMonth').value=d.rentMonth||'';
+        document.getElementById('salaryMonth').value=d.salaryMonth||'';
+        document.getElementById('utilDay').value=d.utilDay||'';
+        document.getElementById('miscDay').value=d.miscDay||'';
+        document.getElementById('recordDate').value=d.recordDate||new Date().toISOString().slice(0,10);
+    }catch(e){}}
+    // Monthly
+    const ms = localStorage.getItem('keetaMonthly');
+    if(ms){try{
+        const d = JSON.parse(ms);
+        document.getElementById('targetMonth').value=d.targetMonth||'';
+        document.getElementById('operatingDays').value=d.operatingDays||30;
+        document.getElementById('dailyAvgIncome').value=d.dailyAvgIncome||'';
+        document.getElementById('dailyFood').value=d.dailyFood||'';
+        document.getElementById('dailyPack').value=d.dailyPack||'';
+        document.getElementById('mRentMonth').value=d.mRentMonth||'';
+        document.getElementById('mSalaryMonth').value=d.mSalaryMonth||'';
+        document.getElementById('mUtilMonth').value=d.mUtilMonth||'';
+        document.getElementById('mMiscMonth').value=d.mMiscMonth||'';
+    }catch(e){}}
 }
 function saveData(){
     const obj={
@@ -272,9 +411,27 @@ function saveData(){
     };
     localStorage.setItem('keetaCalc',JSON.stringify(obj));
 }
+function saveMonthly(){
+    const obj={
+        targetMonth:document.getElementById('targetMonth').value,
+        operatingDays:document.getElementById('operatingDays').value,
+        dailyAvgIncome:document.getElementById('dailyAvgIncome').value,
+        dailyFood:document.getElementById('dailyFood').value,
+        dailyPack:document.getElementById('dailyPack').value,
+        mRentMonth:document.getElementById('mRentMonth').value,
+        mSalaryMonth:document.getElementById('mSalaryMonth').value,
+        mUtilMonth:document.getElementById('mUtilMonth').value,
+        mMiscMonth:document.getElementById('mMiscMonth').value,
+    };
+    localStorage.setItem('keetaMonthly',JSON.stringify(obj));
+}
 function num(id){return parseFloat(document.getElementById(id).value)||0;}
 
 function calc(){
+    if(activeTab==='daily'){calcDaily();}else{calcMonthly();}
+}
+
+function calcDaily(){
     saveData();
     const platformIncome = num('platformIncome');
     const foodCost = num('foodCost');
@@ -316,6 +473,67 @@ function calc(){
                 <span class="v-sub">${dateLabel} · 實收 ${platformIncome.toFixed(2)} − 食材/包裝 ${(foodCost+packCost).toFixed(2)} − 固定 ${fixedDayCost.toFixed(2)}</span>
             </div>
             <div class="v-num"><small>HK$</small>${netProfit.toFixed(2)}</div>
+        </div>
+    </div>
+    `;
+    document.getElementById('resultBox').innerHTML=html;
+    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}
+
+function calcMonthly(){
+    saveMonthly();
+    const days = num('operatingDays') || 30;
+    const dailyAvgIncome = num('dailyAvgIncome');
+    const dailyFood = num('dailyFood');
+    const dailyPack = num('dailyPack');
+    const rentMonth = num('mRentMonth');
+    const salaryMonth = num('mSalaryMonth');
+    const utilMonth = num('mUtilMonth');
+    const miscMonth = num('mMiscMonth');
+
+    const monthRevenue = dailyAvgIncome * days;
+    const dayVariable = dailyFood + dailyPack;
+    const monthVariable = dayVariable * days;
+    const monthGross = monthRevenue - monthVariable;
+    const monthFixed = rentMonth + salaryMonth + utilMonth + miscMonth;
+    const monthNet = monthGross - monthFixed;
+    const grossRate = monthRevenue>0 ? ((monthGross / monthRevenue)*100).toFixed(2) : 0;
+
+    let monthLabel;
+    const tm = document.getElementById('targetMonth').value;
+    if(tm){
+        const [y,m] = tm.split('-');
+        monthLabel = y + '年' + (+m) + '月';
+    } else {
+        const now = new Date();
+        monthLabel = (now.getFullYear()) + '年' + (now.getMonth()+1) + '月';
+    }
+
+    let cls,status,emoji;
+    if(monthNet>0){cls='profit';status='預測盈利';emoji='🏆';}
+    else if(monthNet<0){cls='loss';status='預測虧損';emoji='📉';}
+    else {cls='break';status='剛好保本';emoji='⚖️';}
+
+    const fixedItem = (lbl,v)=>`
+        <div class="r-line sub-item"><span class="lbl">${lbl}</span><span class="val minus">-${v.toFixed(2)}</span></div>`;
+
+    const html=`
+    <div class="glass result-card ${cls}">
+        <div class="r-line total"><span class="lbl">月營收（${dailyAvgIncome.toFixed(2)}/天 × ${days}天）</span><span class="val plus">+${monthRevenue.toFixed(2)}</span></div>
+        <div class="r-line"><span class="lbl">月變動成本（${dayVariable.toFixed(2)}/天 × ${days}天）</span><span class="val minus">-${monthVariable.toFixed(2)}</span></div>
+        <div class="r-line sub-item"><span class="lbl">食材</span><span class="val minus">-${(dailyFood*days).toFixed(2)}</span></div>
+        <div class="r-line sub-item"><span class="lbl">包裝</span><span class="val minus">-${(dailyPack*days).toFixed(2)}</span></div>
+        <div class="r-line total"><span class="lbl">月毛利 · ${grossRate}%</span><span class="val">${monthGross.toFixed(2)}</span></div>
+        <div class="r-line"><span class="lbl">本月固定開支</span><span class="val minus">-${monthFixed.toFixed(2)}</span></div>
+        ${fixedItem('租金', rentMonth)}
+        ${fixedItem('人工', salaryMonth)}
+        ${fixedItem('水電', utilMonth)}
+        ${fixedItem('雜費', miscMonth)}
+        <div class="verdict ${cls}">
+            <div class="v-label">${emoji} ${status}
+                <span class="v-sub">${monthLabel} · 營收 ${monthRevenue.toFixed(2)} − 變動 ${monthVariable.toFixed(2)} − 固定 ${monthFixed.toFixed(2)}</span>
+            </div>
+            <div class="v-num"><small>HK$</small>${monthNet.toFixed(2)}</div>
         </div>
     </div>
     `;

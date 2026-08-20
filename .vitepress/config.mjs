@@ -6,6 +6,7 @@ const books = [
     text: 'Book 1 · 第一册',
     items: [
       { text: 'Lesson 1', link: '/book1/lesson01' },
+      { text: 'Lesson 32', link: '/book1/lesson32' },
     ],
   },
   {
